@@ -5,12 +5,22 @@ import {LeaveReview} from './Form';
 import { Routes, Route, Link } from 'react-router-dom';
 
 function MovieList(props) {
+  const removeItem = (title) => {
+    props.setMovies( props.fav_movies.filter( movieElement => movieElement.title != title));
+  }
+  
+  
   return (
     <>
     <Link to="/review">Review</Link>
     <ul>
       {
-        props.fav_movies.map(movie => <li>{movie.title}</li>)
+        props.fav_movies.map(movie => {
+        return <li>{movie.title}
+        <button onClick={ () => removeItem(movie.title)  }>Remove</button> 
+        </li>
+        }
+      )
       }
     </ul>
     </>
@@ -38,7 +48,7 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<MovieList fav_movies={(movies)} />} /> 
+      <Route path="/" element={<MovieList fav_movies={(movies)} setMovies={setMovies}/>} /> 
       <Route path="/review" element={<LeaveReview movies={movies} setMovies={setMovies}/>} />  
     </Routes>
   )

@@ -7,13 +7,15 @@ export function LeaveReview(props) {
 
     const submit = (event) => {
         event.preventDefault();
-        const movieData = [];
+        const title = movieTitle.current.value;
+        /*const movieData = [];
         props.movies.forEach( movie => {
             movieData.push(movie);
         })
-        const title = movieTitle.current.value;
-        movieData.push({"title": title})
-        props.setMovies(movieData);
+        
+        movieData.push({"title": title})*/
+        props.movies.push({"title": title});
+        props.setMovies(props.movies);
 
 
         alert(title);
