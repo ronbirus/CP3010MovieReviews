@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import {MongoClient } from 'mongodb';
 import { fileURLToPath } from 'url';
+import multer from 'multer';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
@@ -14,6 +15,10 @@ const port = 8000
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, '../build')));
 
+app.use(express.static(path.join(__dirname, '../posters')));
+//app.use(express.static("posters"));
+
+const upload = multer({ dest: 'posters/' })
 
 app.get(/^(?!\/api).+/, (req, res) => {
   res.sendFile(path.join(__dirname, '../build/index.html'))
@@ -42,14 +47,14 @@ app.get('/api/movies', async (req, res) => {
 
 })
 
-app.post('/api/review', async (req,res) => {
+app.post('/api/review', upload.single('movie_poster'),  async (req,res) => {
   const client = new MongoClient('mongodb://127.0.0.1:27017');
   await client.connect();
 
   const db = client.db('movie-data');
 
 
-  const insertOperation = await db.collection('movies').insertOne( {'title':req.body.title});
+  const insertOperation = await db.collection('movies').insertOne( {'title':req.body.title, 'poster':req.file.filename});
   console.log(insertOperation);
   res.redirect('/');
 

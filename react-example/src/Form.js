@@ -25,11 +25,12 @@ export function LeaveReview(props) {
     return (
         <>
         <Link to="/">Home</Link>
-        <form method="post" action="/api/review" >
+        <form method="post" action="/api/review" enctype="multipart/form-data" >
             <input 
             name="title"
             ref = {movieTitle}
             type = "text"/>
+            <input type="file" name="movie_poster" />
             <input type="submit" value="Submit" />
         </form> 
         </>
