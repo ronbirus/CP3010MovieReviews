@@ -47,6 +47,18 @@ app.get('/api/movies', async (req, res) => {
 
 })
 
+app.post('/api/removeMovie', async (req, res) => {
+   console.log(req.body.title);
+   
+   const client = new MongoClient('mongodb://127.0.0.1:27017');
+   await client.connect();
+
+   const db = client.db('movie-data');
+   const result = await db.collection('movies').deleteOne({ title: req.body.title})
+  
+   res.sendStatus(200);
+})
+
 app.post('/api/review', upload.single('movie_poster'),  async (req,res) => {
   const client = new MongoClient('mongodb://127.0.0.1:27017');
   await client.connect();

@@ -5,9 +5,32 @@ import {LeaveReview} from './Form';
 import { Routes, Route, Link } from 'react-router-dom';
 
 function MovieList(props) {
-  const removeItem = (title) => {
-    props.setMovies( props.fav_movies.filter( movieElement => movieElement.title != title));
-  }
+  const removeItem = async (title) => {
+   
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+    var urlencoded = new URLSearchParams();
+    urlencoded.append("title", title);
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: urlencoded,
+      redirect: 'follow'
+    };
+    try {
+      let response = await fetch("/api/removeMovie", requestOptions)
+      if( response.status == 200 ) {
+        props.setMovies( props.fav_movies.filter( movieElement => movieElement.title != title));
+      }
+
+    }
+    catch (e) {
+      console.log('error', e)
+    }
+    
+    }
   
   
   return (
