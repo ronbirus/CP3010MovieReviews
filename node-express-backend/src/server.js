@@ -4,6 +4,8 @@ import fs from 'fs';
 import {MongoClient } from 'mongodb';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
+import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+dotenv.config()
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
@@ -36,12 +38,13 @@ console.log(movieData);
 app.get('/api/movies', async (req, res) => {
     
     //res.json(movieData)
-    const client = new MongoClient('mongodb://127.0.0.1:27017');
+    const client = new MongoClient(process.env.MONGO_CONNECT);
+    
     await client.connect();
 
-    const db = client.db('movie-data');
+    const db = client.db('movies');
 
-    const movieData = await db.collection('movies').find({}).toArray();
+    const movieData = await db.collection('reviews').find({}).toArray();
     console.log(movieData);
     res.json(movieData);
 
@@ -50,23 +53,23 @@ app.get('/api/movies', async (req, res) => {
 app.post('/api/removeMovie', async (req, res) => {
    console.log(req.body.title);
    
-   const client = new MongoClient('mongodb://127.0.0.1:27017');
+   const client = new MongoClient(process.env.MONGO_CONNECT);
    await client.connect();
 
-   const db = client.db('movie-data');
-   const result = await db.collection('movies').deleteOne({ title: req.body.title})
+   const db = client.db('movies');
+   const result = await db.collection('reviews').deleteOne({ title: req.body.title})
   
    res.sendStatus(200);
 })
 
 app.post('/api/review', upload.single('movie_poster'),  async (req,res) => {
-  const client = new MongoClient('mongodb://127.0.0.1:27017');
+  const client = new MongoClient(process.env.MONGO_CONNECT);
   await client.connect();
 
-  const db = client.db('movie-data');
+  const db = client.db('movies');
 
 
-  const insertOperation = await db.collection('movies').insertOne( {'title':req.body.title, 'poster':req.file.filename});
+  const insertOperation = await db.collection('reviews').insertOne( {'title':req.body.title, 'poster':req.file.filename});
   console.log(insertOperation);
   res.redirect('/');
 
