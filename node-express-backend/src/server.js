@@ -5,7 +5,10 @@ import {MongoClient } from 'mongodb';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
 import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+import bodyParser from 'body-parser'
 dotenv.config()
+
+const jsonParser = bodyParser.json()
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename)
@@ -60,6 +63,28 @@ app.post('/api/removeMovie', async (req, res) => {
    const result = await db.collection('reviews').deleteOne({ title: req.body.title})
   
    res.sendStatus(200);
+})
+
+app.post('/api/overwrite', jsonParser, async (req, res) => {
+  const client = new MongoClient(process.env.MONGO_CONNECT);
+  await client.connect();
+
+  const db = client.db('movies');
+
+  //console.log(req.body);
+  /*for( let index in req.body ) {
+    console.log(req.body[index].title + " " + req.body[index].poster);
+  }*/
+
+  const deleteResult = await db.collection('reviews').deleteMany({});
+  console.log('Deleted documents =>', deleteResult);
+
+  const insertResult = await db.collection('reviews').insertMany(req.body);
+  console.log('Inserted documents =>', insertResult);
+
+  res.sendStatus(200);
+
+
 })
 
 app.post('/api/review', upload.single('movie_poster'),  async (req,res) => {
