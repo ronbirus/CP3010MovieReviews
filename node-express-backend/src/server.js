@@ -39,7 +39,7 @@ console.log(movieData);
 ];*/
 
 app.get('/api/movies', async (req, res) => {
-    
+    console.log("hi");
     //res.json(movieData)
     const client = new MongoClient(process.env.MONGO_CONNECT);
     
@@ -93,10 +93,24 @@ app.post('/api/review', upload.single('movie_poster'),  async (req,res) => {
 
   const db = client.db('movies');
 
+//Question 4 - Is this how it's done?
+app.post('/api/addInfo', jsonParser, async (req, res) => {
+  console.log("addInfo called")
+  if (('email' in req.body)) {
+    const client = new MongoClient(process.env.MONGO_CONNECT);
+  await client.connect();
 
-  const insertOperation = await db.collection('reviews').insertOne( {'title':req.body.title, 'poster':req.file.filename});
+  const db = client.db('movies');
+
+  const insertOperation = await db.collection('Infos').insertOne(req.body);
   console.log(insertOperation);
-  res.redirect('/');
+
+  res.sendStatus(200);
+  }
+  else {
+    res.sendStatus(206);
+  } 
+})
 
     /*movieData.push( { "title":req.body.title })
     saveData();
